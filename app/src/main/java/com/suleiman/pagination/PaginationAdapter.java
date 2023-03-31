@@ -18,6 +18,8 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.suleiman.pagination.databinding.ItemListBinding;
+import com.suleiman.pagination.databinding.ItemProgressBinding;
 import com.suleiman.pagination.models.Result;
 import com.suleiman.pagination.utils.GlideApp;
 import com.suleiman.pagination.utils.GlideRequest;
@@ -26,16 +28,17 @@ import com.suleiman.pagination.utils.PaginationAdapterCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Suleiman on 19/10/16.
- */
+
 
 public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    ItemListBinding itemListBinding;
+    ItemProgressBinding itemProgressBinding;
 
     // View Types
     private static final int ITEM = 0;
     private static final int LOADING = 1;
-    private static final int HERO = 2;
+//    private static final int HERO = 2;
+
 
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w200";
 
@@ -70,19 +73,19 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         switch (viewType) {
             case ITEM:
-                View viewItem = inflater.inflate(R.layout.item_list, parent, false);
-                viewHolder = new MovieVH(viewItem);
+                itemListBinding = ItemListBinding.inflate(inflater, parent, false);
+                viewHolder = new MovieVH(itemListBinding);
                 break;
             case LOADING:
-                View viewLoading = inflater.inflate(R.layout.item_progress, parent, false);
-                viewHolder = new LoadingVH(viewLoading);
+                itemProgressBinding = ItemProgressBinding.inflate(inflater, parent, false);
+                viewHolder = new LoadingVH(itemProgressBinding);
                 break;
 //            case HERO:
 //                View viewHero = inflater.inflate(R.layout.item_hero, parent, false);
 //                viewHolder = new HeroVH(viewHero);
 //                break;
         }
-//        assert viewHolder != null;
+        assert viewHolder != null;
         return viewHolder;
     }
 
@@ -104,48 +107,42 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 //                break;
 
             case ITEM:
-                final MovieVH movieVH = (MovieVH) holder;
+                itemListBinding.movieTitle.setText(result.getTitle());
+                itemListBinding.movieYear.setText(formatYearLabel(result));
+                itemListBinding.movieDesc.setText(result.getOverview());
 
-                movieVH.mMovieTitle.setText(result.getTitle());
-                movieVH.mYear.setText(formatYearLabel(result));
-                movieVH.mMovieDesc.setText(result.getOverview());
 
-                // load movie thumbnail
                 loadImage(result.getPosterPath())
                         .listener(new RequestListener<Drawable>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                // TODO: 2/16/19 Handle failure
-                                movieVH.mProgress.setVisibility(View.GONE);
+                                itemListBinding.movieProgress.setVisibility(View.GONE);
                                 return false;
                             }
 
                             @Override
                             public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                // image ready, hide progress now
-                                movieVH.mProgress.setVisibility(View.GONE);
-                                return false;   // return false if you want Glide to handle everything else.
+                                itemListBinding.movieProgress.setVisibility(View.GONE);
+                                return false;
                             }
                         })
-                        .into(movieVH.mPosterImg);
+                        .into(itemListBinding.moviePoster);
 
                 break;
 
             case LOADING:
-                LoadingVH loadingVH = (LoadingVH) holder;
-
                 if (retryPageLoad) {
-                    loadingVH.mErrorLayout.setVisibility(View.VISIBLE);
-                    loadingVH.mProgressBar.setVisibility(View.GONE);
+                 itemProgressBinding.loadmoreErrorlayout.setVisibility(View.VISIBLE);
+                  itemProgressBinding.loadmoreProgress.setVisibility(View.GONE);
 
-                    loadingVH.mErrorTxt.setText(
+                    itemProgressBinding.loadmoreErrortxt.setText(
                             errorMsg != null ?
                                     errorMsg :
                                     context.getString(R.string.error_msg_unknown));
 
                 } else {
-                    loadingVH.mErrorLayout.setVisibility(View.GONE);
-                    loadingVH.mProgressBar.setVisibility(View.VISIBLE);
+                    itemProgressBinding.loadmoreErrorlayout.setVisibility(View.GONE);
+                    itemProgressBinding.loadmoreProgress.setVisibility(View.VISIBLE);
                 }
                 break;
         }
@@ -161,10 +158,9 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 //        if (position == 0) {
 //            return HERO;
 //        } else {
-            return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+        return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
 //        }
     }
-
 
 
     private String formatYearLabel(Result result) {
@@ -181,11 +177,6 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 .centerCrop();
     }
 
-
-    /*
-        Helpers - Pagination
-   _________________________________________________________________________________________________
-    */
 
     public void add(Result r) {
         movieResults.add(r);
@@ -263,44 +254,22 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 //        }
 //    }
 
-    /**
-     * Main list's content ViewHolder
-     */
-    protected class MovieVH extends RecyclerView.ViewHolder {
-        private TextView mMovieTitle;
-        private TextView mMovieDesc;
-        private TextView mYear; // displays "year | language"
-        private ImageView mPosterImg;
-        private ProgressBar mProgress;
 
-        public MovieVH(View itemView) {
-            super(itemView);
+    protected static class MovieVH extends RecyclerView.ViewHolder {
 
-            mMovieTitle = itemView.findViewById(R.id.movie_title);
-            mMovieDesc = itemView.findViewById(R.id.movie_desc);
-            mYear = itemView.findViewById(R.id.movie_year);
-            mPosterImg = itemView.findViewById(R.id.movie_poster);
-            mProgress = itemView.findViewById(R.id.movie_progress);
+        public MovieVH(ItemListBinding itemView) {
+            super(itemView.getRoot());
+
         }
     }
 
 
     protected class LoadingVH extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private ProgressBar mProgressBar;
-        private ImageButton mRetryBtn;
-        private TextView mErrorTxt;
-        private LinearLayout mErrorLayout;
 
-        public LoadingVH(View itemView) {
-            super(itemView);
-
-            mProgressBar = itemView.findViewById(R.id.loadmore_progress);
-            mRetryBtn = itemView.findViewById(R.id.loadmore_retry);
-            mErrorTxt = itemView.findViewById(R.id.loadmore_errortxt);
-            mErrorLayout = itemView.findViewById(R.id.loadmore_errorlayout);
-
-            mRetryBtn.setOnClickListener(this);
-            mErrorLayout.setOnClickListener(this);
+        public LoadingVH(ItemProgressBinding itemView) {
+            super(itemView.getRoot());
+            itemProgressBinding.loadmoreRetry.setOnClickListener(this);
+            itemProgressBinding.loadmoreErrorlayout.setOnClickListener(this);
         }
 
         @Override

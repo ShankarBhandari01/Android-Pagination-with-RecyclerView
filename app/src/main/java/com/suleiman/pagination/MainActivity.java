@@ -110,8 +110,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -128,9 +127,6 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         binding.mainProgress.setVisibility(View.VISIBLE);
         if (callTopRatedMoviesApi().isExecuted())
             callTopRatedMoviesApi().cancel();
-
-        // TODO: Check if data is stale.
-        //  Execute network request if cache is expired; otherwise do not update data.
         adapter.getMovies().clear();
         adapter.notifyDataSetChanged();
         loadFirstPage();

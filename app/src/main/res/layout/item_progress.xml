@@ -26,16 +26,16 @@
         <ImageButton
             android:id="@+id/loadmore_retry"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="29dp"
             android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/activity_margin_content"
             android:layout_marginStart="@dimen/activity_margin_content"
+            android:layout_marginLeft="@dimen/activity_margin_content"
             android:background="@drawable/rety_selector"
             android:padding="@dimen/activity_margin_half"
             android:src="@drawable/ic_refresh_black_24dp"
             android:tint="@color/placeholder_grey"
             android:tintMode="src_in"
-            tools:targetApi="lollipop"/>
+            tools:targetApi="lollipop" />
 
         <LinearLayout
             android:layout_width="match_parent"
