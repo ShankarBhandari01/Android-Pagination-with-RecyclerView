@@ -77,11 +77,12 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 View viewLoading = inflater.inflate(R.layout.item_progress, parent, false);
                 viewHolder = new LoadingVH(viewLoading);
                 break;
-            case HERO:
-                View viewHero = inflater.inflate(R.layout.item_hero, parent, false);
-                viewHolder = new HeroVH(viewHero);
-                break;
+//            case HERO:
+//                View viewHero = inflater.inflate(R.layout.item_hero, parent, false);
+//                viewHolder = new HeroVH(viewHero);
+//                break;
         }
+//        assert viewHolder != null;
         return viewHolder;
     }
 
@@ -91,16 +92,16 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         switch (getItemViewType(position)) {
 
-            case HERO:
-                final HeroVH heroVh = (HeroVH) holder;
-
-                heroVh.mMovieTitle.setText(result.getTitle());
-                heroVh.mYear.setText(formatYearLabel(result));
-                heroVh.mMovieDesc.setText(result.getOverview());
-
-                loadImage(result.getBackdropPath())
-                        .into(heroVh.mPosterImg);
-                break;
+//            case HERO:
+//                final HeroVH heroVh = (HeroVH) holder;
+//
+//                heroVh.mMovieTitle.setText(result.getTitle());
+//                heroVh.mYear.setText(formatYearLabel(result));
+//                heroVh.mMovieDesc.setText(result.getOverview());
+//
+//                loadImage(result.getBackdropPath())
+//                        .into(heroVh.mPosterImg);
+//                break;
 
             case ITEM:
                 final MovieVH movieVH = (MovieVH) holder;
@@ -157,46 +158,22 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
-            return HERO;
-        } else {
+//        if (position == 0) {
+//            return HERO;
+//        } else {
             return (position == movieResults.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
-        }
+//        }
     }
 
-    /*
-        Helpers - bind Views
-   _________________________________________________________________________________________________
-    */
 
-    /**
-     * @param result
-     * @return [releasedate] | [2letterlangcode]
-     */
+
     private String formatYearLabel(Result result) {
         return result.getReleaseDate().substring(0, 4)  // we want the year only
                 + " | "
                 + result.getOriginalLanguage().toUpperCase();
     }
 
-    /**
-     * Using Glide to handle image loading.
-     * Learn more about Glide here:
-     * <a href="http://blog.grafixartist.com/image-gallery-app-android-studio-1-4-glide/" />
-     * <p>
-     * //     * @param posterPath from {@link Result#getPosterPath()}
-     *
-     * @return Glide builder
-     */
-//    private DrawableRequestBuilder<String> loadImage(@NonNull String posterPath) {
-//        return Glide
-//                .with(context)
-//                .load(BASE_URL_IMG + posterPath)
-//                .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
-//                .centerCrop()
-//                .crossFade();
 
-//    }
     private GlideRequest<Drawable> loadImage(@NonNull String posterPath) {
         return GlideApp
                 .with(context)
@@ -262,12 +239,6 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return movieResults.get(position);
     }
 
-    /**
-     * Displays Pagination retry footer view along with appropriate errorMsg
-     *
-     * @param show
-     * @param errorMsg to display if page load fails
-     */
     public void showRetry(boolean show, @Nullable String errorMsg) {
         retryPageLoad = show;
         notifyItemChanged(movieResults.size() - 1);
@@ -276,29 +247,21 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
 
-   /*
-   View Holders
-   _________________________________________________________________________________________________
-    */
-
-    /**
-     * Header ViewHolder
-     */
-    protected class HeroVH extends RecyclerView.ViewHolder {
-        private TextView mMovieTitle;
-        private TextView mMovieDesc;
-        private TextView mYear; // displays "year | language"
-        private ImageView mPosterImg;
-
-        public HeroVH(View itemView) {
-            super(itemView);
-
-            mMovieTitle = itemView.findViewById(R.id.movie_title);
-            mMovieDesc = itemView.findViewById(R.id.movie_desc);
-            mYear = itemView.findViewById(R.id.movie_year);
-            mPosterImg = itemView.findViewById(R.id.movie_poster);
-        }
-    }
+//    protected class HeroVH extends RecyclerView.ViewHolder {
+//        private TextView mMovieTitle;
+//        private TextView mMovieDesc;
+//        private TextView mYear; // displays "year | language"
+//        private ImageView mPosterImg;
+//
+//        public HeroVH(View itemView) {
+//            super(itemView);
+//
+//            mMovieTitle = itemView.findViewById(R.id.movie_title);
+//            mMovieDesc = itemView.findViewById(R.id.movie_desc);
+//            mYear = itemView.findViewById(R.id.movie_year);
+//            mPosterImg = itemView.findViewById(R.id.movie_poster);
+//        }
+//    }
 
     /**
      * Main list's content ViewHolder

@@ -3,6 +3,7 @@ package com.suleiman.pagination;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.suleiman.pagination.api.MovieApi;
 import com.suleiman.pagination.api.MovieService;
+import com.suleiman.pagination.databinding.ActivityMainBinding;
 import com.suleiman.pagination.models.Result;
 import com.suleiman.pagination.models.TopRatedMovies;
 import com.suleiman.pagination.utils.PaginationAdapterCallback;
@@ -34,17 +36,12 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements PaginationAdapterCallback {
 
+    private ActivityMainBinding binding;
     private static final String TAG = "MainActivity";
 
     PaginationAdapter adapter;
     LinearLayoutManager linearLayoutManager;
 
-    RecyclerView rv;
-    ProgressBar progressBar;
-    LinearLayout errorLayout;
-    Button btnRetry;
-    TextView txtError;
-    SwipeRefreshLayout swipeRefreshLayout;
 
     private static final int PAGE_START = 1;
 
@@ -60,24 +57,17 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        rv = findViewById(R.id.main_recycler);
-        progressBar = findViewById(R.id.main_progress);
-        errorLayout = findViewById(R.id.error_layout);
-        btnRetry = findViewById(R.id.error_btn_retry);
-        txtError = findViewById(R.id.error_txt_cause);
-        swipeRefreshLayout = findViewById(R.id.main_swiperefresh);
+        initBinding();
 
         adapter = new PaginationAdapter(this);
 
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        rv.setLayoutManager(linearLayoutManager);
-        rv.setItemAnimator(new DefaultItemAnimator());
+        binding.mainRecycler.setLayoutManager(linearLayoutManager);
+        binding.mainRecycler.setItemAnimator(new DefaultItemAnimator());
 
-        rv.setAdapter(adapter);
+        binding.mainRecycler.setAdapter(adapter);
 
-        rv.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
+        binding.mainRecycler.addOnScrollListener(new PaginationScrollListener(linearLayoutManager) {
             @Override
             protected void loadMoreItems() {
                 isLoading = true;
@@ -107,10 +97,15 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
         loadFirstPage();
 
-        btnRetry.setOnClickListener(view -> loadFirstPage());
+        binding.errorView.errorBtnRetry.setOnClickListener(view -> loadFirstPage());
 
-        swipeRefreshLayout.setOnRefreshListener(this::doRefresh);
+        binding.mainSwiperefresh.setOnRefreshListener(this::doRefresh);
 
+    }
+
+    private void initBinding() {
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
     }
 
     @Override
@@ -122,20 +117,15 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_refresh:
-                // Signal SwipeRefreshLayout to start the progress indicator
-                swipeRefreshLayout.setRefreshing(true);
-                doRefresh();
+        if (item.getItemId() == R.id.menu_refresh) {
+            binding.mainSwiperefresh.setRefreshing(true);
+            doRefresh();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Triggers the actual background refresh via the {@link SwipeRefreshLayout}
-     */
     private void doRefresh() {
-        progressBar.setVisibility(View.VISIBLE);
+        binding.mainProgress.setVisibility(View.VISIBLE);
         if (callTopRatedMoviesApi().isExecuted())
             callTopRatedMoviesApi().cancel();
 
@@ -144,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         adapter.getMovies().clear();
         adapter.notifyDataSetChanged();
         loadFirstPage();
-        swipeRefreshLayout.setRefreshing(false);
+        binding.mainSwiperefresh.setRefreshing(false);
     }
 
     private void loadFirstPage() {
@@ -156,14 +146,11 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
         callTopRatedMoviesApi().enqueue(new Callback<TopRatedMovies>() {
             @Override
-            public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
+            public void onResponse(@NonNull Call<TopRatedMovies> call, @NonNull Response<TopRatedMovies> response) {
                 hideErrorView();
 
-//                Log.i(TAG, "onResponse: " + (response.raw().cacheResponse() != null ? "Cache" : "Network"));
-
-                // Got data. Send it to adapter
                 List<Result> results = fetchResults(response);
-                progressBar.setVisibility(View.GONE);
+                binding.mainProgress.setVisibility(View.GONE);
                 adapter.addAll(results);
 
                 if (currentPage <= TOTAL_PAGES) adapter.addLoadingFooter();
@@ -171,19 +158,17 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
             }
 
             @Override
-            public void onFailure(Call<TopRatedMovies> call, Throwable t) {
+            public void onFailure(@NonNull Call<TopRatedMovies> call, @NonNull Throwable t) {
                 t.printStackTrace();
                 showErrorView(t);
             }
         });
     }
 
-    /**
-     * @param response extracts List<{@link Result>} from response
-     * @return
-     */
+
     private List<Result> fetchResults(Response<TopRatedMovies> response) {
         TopRatedMovies topRatedMovies = response.body();
+        assert topRatedMovies != null;
         return topRatedMovies.getResults();
     }
 
@@ -192,9 +177,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
         callTopRatedMoviesApi().enqueue(new Callback<TopRatedMovies>() {
             @Override
-            public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
-//                Log.i(TAG, "onResponse: " + currentPage
-//                        + (response.raw().cacheResponse() != null ? "Cache" : "Network"));
+            public void onResponse(@NonNull Call<TopRatedMovies> call, @NonNull Response<TopRatedMovies> response) {
 
                 adapter.removeLoadingFooter();
                 isLoading = false;
@@ -207,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
             }
 
             @Override
-            public void onFailure(Call<TopRatedMovies> call, Throwable t) {
+            public void onFailure(@NonNull Call<TopRatedMovies> call, @NonNull Throwable t) {
                 t.printStackTrace();
                 adapter.showRetry(true, fetchErrorMessage(t));
             }
@@ -215,12 +198,6 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     }
 
 
-    /**
-     * Performs a Retrofit call to the top rated movies API.
-     * Same API call for Pagination.
-     * As {@link #currentPage} will be incremented automatically
-     * by @{@link PaginationScrollListener} to load next page.
-     */
     private Call<TopRatedMovies> callTopRatedMoviesApi() {
         return movieService.getTopRatedMovies(
                 getString(R.string.my_api_key),
@@ -235,25 +212,16 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
         loadNextPage();
     }
 
-
-    /**
-     * @param throwable required for {@link #fetchErrorMessage(Throwable)}
-     * @return
-     */
     private void showErrorView(Throwable throwable) {
 
-        if (errorLayout.getVisibility() == View.GONE) {
-            errorLayout.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
+        if (binding.errorView.errorView.getVisibility() == View.GONE) {
+            binding.errorView.errorView.setVisibility(View.VISIBLE);
+            binding.mainProgress.setVisibility(View.GONE);
 
-            txtError.setText(fetchErrorMessage(throwable));
+            binding.errorView.errorTxtCause.setText(fetchErrorMessage(throwable));
         }
     }
 
-    /**
-     * @param throwable to identify the type of error
-     * @return appropriate error message
-     */
     private String fetchErrorMessage(Throwable throwable) {
         String errorMsg = getResources().getString(R.string.error_msg_unknown);
 
@@ -270,17 +238,12 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
 
 
     private void hideErrorView() {
-        if (errorLayout.getVisibility() == View.VISIBLE) {
-            errorLayout.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
+        if (binding.errorView.errorView.getVisibility() == View.VISIBLE) {
+            binding.errorView.errorView.setVisibility(View.GONE);
+          binding.mainProgress.setVisibility(View.VISIBLE);
         }
     }
 
-    /**
-     * Remember to add android.permission.ACCESS_NETWORK_STATE permission.
-     *
-     * @return
-     */
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;

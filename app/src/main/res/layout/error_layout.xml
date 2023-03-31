@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:tools="http://schemas.android.com/tools"
-       android:layout_width="match_parent"
-       android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/error_layout"
+        android:id="@+id/errorView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -17,7 +19,7 @@
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/error_msg"/>
+            android:text="@string/error_msg" />
 
         <TextView
             android:id="@+id/error_txt_cause"
@@ -26,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/activity_margin_quarter"
-            tools:text="The server took too long to respond."/>
+            tools:text="The server took too long to respond." />
 
         <Button
             android:id="@+id/error_btn_retry"
@@ -36,8 +38,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/activity_margin_content"
             android:text="@string/btn_retry"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimary" />
 
     </LinearLayout>
 
-</merge>
+</LinearLayout>
