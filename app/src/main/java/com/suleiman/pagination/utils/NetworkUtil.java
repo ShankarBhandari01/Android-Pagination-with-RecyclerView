@@ -4,11 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-/**
- * Pagination
- * Created by Suleiman19 on 2/17/19.
- * Copyright (c) 2019. Suleiman Ali Shakir. All rights reserved.
- */
+
 public class NetworkUtil {
 
     public static boolean hasNetwork(Context context) {

@@ -9,11 +9,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.module.AppGlideModule;
 import com.bumptech.glide.request.RequestOptions;
 
-/**
- * Pagination
- * Created by Suleiman19 on 2/16/19.
- * Copyright (c) 2019. Suleiman Ali Shakir. All rights reserved.
- */
+
 @GlideModule
 public class PaginationGlideModule extends AppGlideModule {
 

@@ -6,11 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Pagination
- * Created by Suleiman19 on 10/27/16.
- * Copyright (c) 2016. Suleiman Ali Shakir. All rights reserved.
- */
+
 
 public class Result {
 
