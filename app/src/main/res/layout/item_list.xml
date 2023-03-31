@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_margin_half"
+        android:visibility="gone"
         app:cardBackgroundColor="@color/placeholder_grey"
         app:cardCornerRadius="3dp"
         app:cardPreventCornerOverlap="false">
@@ -36,12 +37,7 @@
         android:layout_marginTop="@dimen/activity_margin"
         android:background="@android:color/white"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/activity_margin"
-        android:paddingEnd="@dimen/activity_margin"
-        android:paddingLeft="@dimen/poster_thumb_width"
-        android:paddingRight="@dimen/activity_margin"
-        android:paddingStart="@dimen/poster_thumb_width"
-        android:paddingTop="@dimen/activity_margin_half">
+        android:paddingBottom="@dimen/activity_margin">
 
         <TextView
             android:id="@+id/movie_year"

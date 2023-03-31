@@ -24,6 +24,7 @@ import com.suleiman.pagination.api.MovieService;
 import com.suleiman.pagination.databinding.ActivityMainBinding;
 import com.suleiman.pagination.models.Result;
 import com.suleiman.pagination.models.TopRatedMovies;
+import com.suleiman.pagination.utils.NetworkUtil;
 import com.suleiman.pagination.utils.PaginationAdapterCallback;
 import com.suleiman.pagination.utils.PaginationScrollListener;
 
@@ -221,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     private String fetchErrorMessage(Throwable throwable) {
         String errorMsg = getResources().getString(R.string.error_msg_unknown);
 
-        if (!isNetworkConnected()) {
+        if (!NetworkUtil.hasNetwork(this)) {
             errorMsg = getResources().getString(R.string.error_msg_no_internet);
         } else if (throwable instanceof TimeoutException) {
             errorMsg = getResources().getString(R.string.error_msg_timeout);
@@ -236,12 +237,8 @@ public class MainActivity extends AppCompatActivity implements PaginationAdapter
     private void hideErrorView() {
         if (binding.errorView.errorView.getVisibility() == View.VISIBLE) {
             binding.errorView.errorView.setVisibility(View.GONE);
-          binding.mainProgress.setVisibility(View.VISIBLE);
+            binding.mainProgress.setVisibility(View.VISIBLE);
         }
     }
 
-    private boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
-    }
 }

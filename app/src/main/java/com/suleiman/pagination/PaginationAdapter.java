@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ItemListBinding itemListBinding;
     ItemProgressBinding itemProgressBinding;
@@ -40,15 +39,15 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 //    private static final int HERO = 2;
 
 
-    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w200";
+//    private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w200";
 
     private List<Result> movieResults;
-    private Context context;
+    private final Context context;
 
     private boolean isLoadingAdded = false;
     private boolean retryPageLoad = false;
 
-    private PaginationAdapterCallback mCallback;
+    private final PaginationAdapterCallback mCallback;
 
     private String errorMsg;
 
@@ -80,10 +79,6 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 itemProgressBinding = ItemProgressBinding.inflate(inflater, parent, false);
                 viewHolder = new LoadingVH(itemProgressBinding);
                 break;
-//            case HERO:
-//                View viewHero = inflater.inflate(R.layout.item_hero, parent, false);
-//                viewHolder = new HeroVH(viewHero);
-//                break;
         }
         assert viewHolder != null;
         return viewHolder;
@@ -95,50 +90,33 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         switch (getItemViewType(position)) {
 
-//            case HERO:
-//                final HeroVH heroVh = (HeroVH) holder;
-//
-//                heroVh.mMovieTitle.setText(result.getTitle());
-//                heroVh.mYear.setText(formatYearLabel(result));
-//                heroVh.mMovieDesc.setText(result.getOverview());
-//
-//                loadImage(result.getBackdropPath())
-//                        .into(heroVh.mPosterImg);
-//                break;
-
             case ITEM:
                 itemListBinding.movieTitle.setText(result.getTitle());
-                itemListBinding.movieYear.setText(formatYearLabel(result));
+//                itemListBinding.movieYear.setText(formatYearLabel(result));
                 itemListBinding.movieDesc.setText(result.getOverview());
-
-
-                loadImage(result.getPosterPath())
-                        .listener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                itemListBinding.movieProgress.setVisibility(View.GONE);
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                itemListBinding.movieProgress.setVisibility(View.GONE);
-                                return false;
-                            }
-                        })
-                        .into(itemListBinding.moviePoster);
+//                loadImage(result.getPosterPath())
+//                        .listener(new RequestListener<Drawable>() {
+//                            @Override
+//                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+//                                itemListBinding.movieProgress.setVisibility(View.GONE);
+//                                return false;
+//                            }
+//
+//                            @Override
+//                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+//                                itemListBinding.movieProgress.setVisibility(View.GONE);
+//                                return false;
+//                            }
+//                        })
+//                        .into(itemListBinding.moviePoster);
 
                 break;
 
             case LOADING:
                 if (retryPageLoad) {
-                 itemProgressBinding.loadmoreErrorlayout.setVisibility(View.VISIBLE);
-                  itemProgressBinding.loadmoreProgress.setVisibility(View.GONE);
-
-                    itemProgressBinding.loadmoreErrortxt.setText(
-                            errorMsg != null ?
-                                    errorMsg :
-                                    context.getString(R.string.error_msg_unknown));
+                    itemProgressBinding.loadmoreErrorlayout.setVisibility(View.VISIBLE);
+                    itemProgressBinding.loadmoreProgress.setVisibility(View.GONE);
+                    itemProgressBinding.loadmoreErrortxt.setText(errorMsg != null ? errorMsg : context.getString(R.string.error_msg_unknown));
 
                 } else {
                     itemProgressBinding.loadmoreErrorlayout.setVisibility(View.GONE);
@@ -170,12 +148,12 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
 
-    private GlideRequest<Drawable> loadImage(@NonNull String posterPath) {
-        return GlideApp
-                .with(context)
-                .load(BASE_URL_IMG + posterPath)
-                .centerCrop();
-    }
+//    private GlideRequest<Drawable> loadImage(@NonNull String posterPath) {
+//        return GlideApp
+//                .with(context)
+//                .load(BASE_URL_IMG + posterPath)
+//                .centerCrop();
+//    }
 
 
     public void add(Result r) {
